@@ -1,0 +1,94 @@
+body {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+p {
+	font-family: Arial, Helvetica, sans-serif;
+	user-select: none;
+}
+
+section {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	align-items: center;
+}
+
+#progress {
+	height: 15px;
+}
+
+#integrand {
+	height: fit-content;
+}
+
+#errorMessage {
+	color: crimson;
+}
+
+.integral {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.integral > p {
+	height: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.integral > input {
+	width: 120px;
+}
+.wrt {
+	display: flex;
+	flex-direction: row;
+	gap: 3px;
+	align-items: center;
+}
+.wrt > input {
+	width: 50px;
+}
+
+
+button {
+	border-radius: 5px;
+	border: 1px solid var(--color);
+	color: var(--color);
+	background-color: white;
+	padding: 5px 16px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+button:hover {
+	background-color: var(--color);
+	color: white;
+}
+#addBtn {
+	--color: green
+}
+#removeBtn {
+	--color: firebrick;
+}
+#eval {
+	--color: cornflowerblue;
+}
+#reset {
+	--color: gray;
+}
+#cancel {
+	--color: crimson;
+}
+
+input {
+	padding: 5px 10px;
+	border: none;
+	background-color: ghostwhite;
+	border-radius: 5px;
+	outline: none;
+	border: 1px solid lightsteelblue;
+}
+input:focus {
+	border: 1px solid dodgerblue;
+}

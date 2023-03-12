@@ -5,300 +5,38 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Integral Evaluator</title>
+		<link rel="stylesheet" href="style.css">
   </head>
 
-  <body onload="render()">
-    <div id="layout">
-			<div id="integralWrapper"></div>
+  <body>
+		<!-- render initial worker -->
+    <section id="layout">
+			<section id="integralWrapper"></section>
       <input id="integrand"></input>
-			<div id="wrtWrapper"></div>
-    </div>
-		<div id="buttonWrapper">
+			<section id="wrtWrapper"></section>
+		</section>
+		<section>
 			<button id="addBtn">Add</button>
 			<button id="removeBtn">Remove</button>
 			<button id="eval">Evaluate</button>
-		</div>
-		<p style="font-size: small; color: cornflowerblue">Progress Indicator in Web Console</p>
-		<p id="mathEval"></p>
-		<p id="result"></p>
+			<button id="reset">Reset</button>
+		</section>
+		<!-- <p style="font-size: small; color: cornflowerblue">Progress Indicator in Web Console</p> -->
+		<section>
+			<progress id="progress" value="0"></progress>
+			<button id="cancel">Cancel</button>
+		</section>
+		<section style="gap: 0;">
+			<!-- override gap from css -->
+			<p id="mathEval"></p>
+			<p id="result"></p>
+		</section>
+		<p id="errorMessage"></p>
   </body>
 
-  <style>
-		p {
-			font-family: Arial, Helvetica, sans-serif;
-		}
-
-    #layout {
-      display: flex;
-			gap: 10px;
-			align-items: center;
-      flex-direction: row;
-    }
-		#buttonWrapper {
-			display: flex;
-			flex-direction: row;
-			gap: 8px;
-			margin-top: 12px;
-		}
-		#integralWrapper, #wrtWrapper {
-			display: flex;
-			flex-direction: row;
-			gap: 8px;
-		}
-
-    #integrand {
-			height: fit-content;
-    }
-
-		.integral {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-		}
-		.integral > p {
-			height: 50px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-		.integral > input {
-			width: 120px;
-		}
-		.wrt {
-			display: flex;
-			flex-direction: row;
-			gap: 3px;
-			align-items: center;
-		}
-		.wrt > input {
-			width: 25px;
-		}
-
-
-		button {
-			border-radius: 5px;
-			border: 1px solid var(--color);
-			color: var(--color);
-			background-color: white;
-			padding: 5px 16px;
-			cursor: pointer;
-			transition: all 0.2s;
-		}
-		button:hover {
-			background-color: var(--color);
-			color: white;
-		}
-		#addBtn {
-			--color: green
-		}
-		#removeBtn {
-			--color: firebrick;
-		}
-		#eval {
-			--color: cornflowerblue;
-		}
-
-		input {
-			padding: 5px 10px;
-			border: none;
-			background-color: ghostwhite;
-			border-radius: 5px;
-			outline: none;
-			border: 1px solid lightsteelblue;
-		}
-		input:focus {
-			border: 1px solid dodgerblue;
-		}
-  </style>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=AM_CHTML"></script>
-  <script src="node_modules/evaluatex/dist/evaluatex.min.js"></script>
-  <script defer>
-    const integrand = document.getElementById("integrand");
-    const layout = document.getElementById("layout");
-    const addBtn = document.getElementById("addBtn");
-		const removeBtn = document.getElementById("removeBtn");
-		const evalBtn = document.getElementById("eval");
-		const integralWrapper = document.getElementById("integralWrapper");
-		const wrtWrapper = document.getElementById("wrtWrapper");
-		const mathEval = document.getElementById("mathEval");
-		const mathEvalResult = document.getElementById("result");
-
-		const defaultValue = {
-			upper_bound: "",
-			lower_bound: "",
-			variable: "",
-		};
-
-		let integrals = [
-			{...defaultValue,}
-		];
-
-		function update() {
-			let expr = "";
-			for (let i = 0; i < integrals.length; i++) {
-				expr += "int";
-				if (integrals[i].lower_bound) expr += `_{${integrals[i].lower_bound}}`;
-				if (integrals[i].upper_bound) expr += `^{${integrals[i].upper_bound}} `;
-			}
-			expr += `${integrand.value} `;
-			for (let i = integrals.length - 1; i >= 0; i--) {
-				expr += `d ${integrals[i].variable} `;
-			}
-
-			mathEval.innerHTML = `\`${expr}\``;
-
-			MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-		}
-		
-		function render() {
-			integralWrapper.innerHTML = ''; // clears
-			wrtWrapper.innerHTML = ''; // clears
-
-			for (let i = 0; i < integrals.length; i++) { // integrals
-				let integral = document.createElement("div");
-				integral.classList.add("integral");
-				
-				let upperBound = document.createElement("input")
-				upperBound.classList.add("upper");
-				upperBound.value = integrals[i].upper_bound;
-				let lowerBound = document.createElement("input")
-				lowerBound.classList.add("lower");
-				lowerBound.value = integrals[i].lower_bound;
-				let symbol = document.createElement("p");
-				symbol.innerHTML = "`int`"; // integral symbol
-
-				upperBound.addEventListener("change", (e) => {
-					integrals[i].upper_bound = e.target.value;
-					update();
-				});
-				lowerBound.addEventListener("change", (e) => {
-					integrals[i].lower_bound = e.target.value;
-					update();
-				});
-				
-				integral.appendChild(upperBound);
-				integral.appendChild(symbol);
-				integral.appendChild(lowerBound);
-				
-				integralWrapper.appendChild(integral);
-			}
-
-			for (let i = integrals.length - 1; i >= 0; i--) { // wrt
-				let wrt = document.createElement("div");
-				wrt.classList.add("wrt");
-				
-				let symbol = document.createElement("p");
-				symbol.innerHTML = "`d`"; // integral symbol
-				let variable = document.createElement("input")
-				variable.classList.add("variable");
-				variable.value = integrals[i].variable;
-				
-				wrt.appendChild(symbol);
-				wrt.appendChild(variable);
-
-				variable.addEventListener("change", (e) => {
-					integrals[i].variable = e.target.value;
-					update();
-				});
-				
-				wrtWrapper.appendChild(wrt);
-			}
-		}
-		
-		integrand.addEventListener("change", (e) => update());
-
-    addBtn.addEventListener("click", () => {
-			integrals.push({...defaultValue});
-			render();
-			update();
-    });
-		
-		removeBtn.addEventListener("click", () => {
-			if (integrals.length <= 1) return;
-			const int = integrals[integrals.length - 1];
-			if (int.lower_bound !== "" || int.upper_bound !== "" || int.variable !== "") {
-				if (!confirm("Are you sure you want to delete?")) {
-					return;
-				}
-			}
-			integrals.pop();
-			render();
-			update();
-    });
-
-		function evaluate() {
-			const OPTIONS = {
-				"pi": Math.PI,
-			};
-			const evalIntegrand = evaluatex(integrand.value, OPTIONS);
-			let variables = {};
-
-			const bounds = integrals.map(e => {
-				return {
-					upper: evaluatex(e.upper_bound, OPTIONS),
-					lower: evaluatex(e.lower_bound, OPTIONS),
-				};
-			});
-
-			const MAX_ORDER_ITERS = 7; // 10^MAX_ORDER_ITERS
-			const NUM_ITERATIONS = Math.ceil(Math.pow(10, MAX_ORDER_ITERS / integrals.length));
-
-
-			// visual counter for progress indicator
-			let TOTAL_COUNT = Math.pow(NUM_ITERATIONS, integrals.length);
-			let CURRENT_COUNT = 0;
-			let CURRENT_PERCENTAGE = 0;
-
-			function recurse(index) {
-				let sum = 0;
-				let upper = bounds[index].upper(variables);
-				let lower = bounds[index].lower(variables);
-				
-				variables[integrals[index].variable] = 0; // add variable
-				const dVar = (upper - lower) / NUM_ITERATIONS;
-				
-				if (index < integrals.length - 1) {
-					for (let i = 0; i < NUM_ITERATIONS; i++) {
-						const t = i / NUM_ITERATIONS;
-						variables[integrals[index].variable] = upper * t + lower * (1 - t); // lerp between upper and lower
-						sum += recurse(index + 1) * dVar;
-					}
-				} else {
-					// if inner most integral, then actually evaluate integrand
-					for (let i = 0; i < NUM_ITERATIONS; i++) {
-						const t = i / NUM_ITERATIONS;
-						variables[integrals[index].variable] = upper * t + lower * (1 - t); // lerp between upper and lower
-						sum += evalIntegrand(variables) * dVar;
-
-
-						// update counter
-						CURRENT_COUNT++;
-						if (CURRENT_COUNT % Math.trunc(TOTAL_COUNT / 20) === 0) { // every 5%
-							console.log(`${(CURRENT_COUNT / TOTAL_COUNT * 100).toFixed(0)}% complete`);
-						}
-					}
-				}
-
-				return sum;
-			}
-
-			try {
-				let result = recurse(0);
-				mathEvalResult.innerHTML = `\`~~${result.toFixed(6)}\``;
-			} catch(e) {
-				console.error(e)
-				mathEvalResult.innerHTML = `Something went wrong: ${e.message}`;
-			}
-			update();
-		}
-		evalBtn.addEventListener("click", () => {
-			try {
-				evaluate();
-			} catch(e) {
-				console.error("Missing fields:", e);
-			}
-		});
-		
-	</script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+	<script src="evaluatex.js"></script>
+  <script defer src="script.js"></script>
+	<script defer src="worker.js"></script>
 </html>
