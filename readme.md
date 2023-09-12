@@ -9,7 +9,7 @@ Can evaluate any number of definite integrals using Riemann Sums
 ## How To Use
 1. Clone repository and install dependencies
 	```bash
-	yarn add
+	yarn install
 	```
 1. Run http server (necessary to enable web-worker)
 	```bash
