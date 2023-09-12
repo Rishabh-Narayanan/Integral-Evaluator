@@ -13,7 +13,7 @@ Can evaluate any number of definite integrals using Riemann Sums
 	```
 1. Run http server (necessary to enable web-worker)
 	```bash
-	npx http-server -o
+	yarn http-server -o
 	```
 1. Ready to use!
 
