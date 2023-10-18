@@ -21,7 +21,7 @@ function job(integrals, integrand) {
     };
   });
 
-  const NUM_ITERATIONS = Math.max(1e3, Math.pow(10, 8 / integrals.length));
+  const NUM_ITERATIONS = Math.max(1e3, Math.pow(10, 7 / integrals.length));
 
   // visual counter for progress indicator
   let TOTAL_COUNT = Math.pow(NUM_ITERATIONS, integrals.length);
